@@ -1,0 +1,39 @@
+# Go build output
+/zip_crack
+*.exe
+
+# macOS build (scripts/package-macos.sh): scratch binary + packaged app/dmg,
+# plus icon variants regenerated from macos/icon.png on every run
+/build/
+/dist/zip_crack
+/dist/*.app/
+/dist/*.app.zip
+/dist/*.dmg
+/macos/icon-rounded.png
+/macos/icon-runtime.png
+/macos/icon.icns
+
+# Windows build (scripts/build-windows-go.ps1): binaries covered by *.exe
+# above. rsrc_windows_*.syso (PE icon resources) are committed, not ignored.
+
+# Android build (scripts/build-android.sh)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/captures/
+*.apk.idsig
+*.hprof
+
+# Outputs (keep samples; ignore rebuilt binaries/APKs)
+/dist/*.apk
+/dist/*.apk.idsig
+
+# OS junk
+.DS_Store
+._*
+*~
+*.swp
+
+# Keystore: keep local for installs; do not publish signing keys
+android/zipcrack-release.keystore

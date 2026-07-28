@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ZipCrack" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#2F80ED</item>
+        <item name="colorPrimaryDark">#1D65C1</item>
+        <item name="colorAccent">#2F80ED</item>
+        <item name="android:windowBackground">#F4F5F2</item>
+        <item name="android:textColorPrimary">#1F2933</item>
+        <item name="android:textColorSecondary">#65717C</item>
+        <item name="android:statusBarColor">#E9EDF0</item>
+        <item name="android:navigationBarColor">#F4F5F2</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

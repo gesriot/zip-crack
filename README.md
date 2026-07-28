@@ -1,14 +1,15 @@
-# Password Cracker (zip_crack)
+# Password Cracker
 
 Подбор паролей: **ZIP** (ZipCrypto / AES), **7z**, **encrypted DOCX/XLSX** (Office OLE).
 
 | Платформа | Сборка | Движок |
 |-----------|--------|--------|
 | **macOS** | `dist/Password Cracker.dmg` (Go + Fyne) | pure Go |
+| **Windows** | `dist/PasswordCracker-gui.exe`, `dist/zip_crack.exe` (Go + Fyne) | pure Go |
 | **Android** | `dist/PasswordCracker-1.5.apk` | Kotlin + zip4j / Commons Compress / POI |
 | **CLI** | `go build .` | pure Go (тот же `crack/`) |
 
-## macOS (рекомендуется)
+## macOS
 
 ```text
 dist/Password Cracker.dmg
@@ -51,6 +52,23 @@ go build -o dist/zip_crack .
 ```bash
 go run ./cmd/gui
 ```
+
+## Windows
+
+```text
+dist/PasswordCracker-gui.exe  # GUI без консольного окна
+dist/zip_crack.exe            # CLI
+```
+
+Те же Go-backends, что в macOS/CLI версии: ZIP ZipCrypto, ZIP AES, 7z и encrypted DOCX/XLSX. Java / Word **не нужны**.
+
+Пересборка:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/build-windows-go.ps1
+```
+
+Скрипт собирает оба бинарника в `dist/`. Иконки Windows уже лежат в репозитории как `rsrc_windows_*.syso`; пересоздавать их нужно только при смене `macos/icon-runtime.png` или `cmd/gui/icon.png`.
 
 ## Android APK
 

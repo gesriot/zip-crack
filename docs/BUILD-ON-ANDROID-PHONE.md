@@ -1,8 +1,7 @@
 # Сборка Password Cracker на Android-смартфоне  
 (Termux + proot-distro Ubuntu)
 
-Инструкция «для себя»: перенос папки `zip_crack` на другой телефон и получение **release APK**.  
-Проверено по процессу на OnePlus Pad 4; на телефоне шаги те же (ARM64).
+Инструкция «для себя»: перенос папки `zip_crack` на другой телефон и получение **release APK**. 
 
 ---
 
@@ -36,12 +35,12 @@ dist/*.apk
 
 - `android/gradlew` + `android/gradle/wrapper/*`
 - `android/zipcrack-release.keystore`  
-  (если нет — сгенерируете, подпись будет **другая**, обновление поверх старого APK не встанет)
+  (если нет – сгенерируете, подпись будет **другая**, обновление поверх старого APK не встанет)
 - исходники `android/app/src/...`
 
 ### Не тащить как есть
 
-- `android/local.properties` — на новом телефоне путь к SDK **другой** (скрипт/инструкция пересоздаст)
+- `android/local.properties` – на новом телефоне путь к SDK **другой** (скрипт/инструкция пересоздаст)
 
 ---
 
@@ -75,7 +74,7 @@ termux-setup-storage   # один раз, разрешить доступ
 ```
 
 **Важно:** сборку Go/Gradle **не** запускайте напрямую с `/sdcard` (FAT/FUSE, нет нормальных file locks).  
-Скрипт `build-android.sh` копирует дерево в `/tmp` внутри Ubuntu — так и нужно.
+Скрипт `build-android.sh` копирует дерево в `/tmp` внутри Ubuntu – так и нужно.
 
 ---
 
@@ -87,7 +86,7 @@ proot-distro install ubuntu    # если ещё нет
 proot-distro login ubuntu --user root
 ```
 
-Дальше все команды — **внутри Ubuntu**, если не сказано иное.
+Дальше все команды – **внутри Ubuntu**, если не сказано иное.
 
 ### 2.1. Пакеты
 
@@ -113,7 +112,7 @@ java -version    # 21.x, aarch64
 which aapt2      # часто /usr/bin/aapt2
 ```
 
-Если `aapt2` нет в PATH — поставьте пакет `aapt2` или укажите путь в `gradle.properties` (см. ниже).
+Если `aapt2` нет в PATH – поставьте пакет `aapt2` или укажите путь в `gradle.properties` (см. ниже).
 
 ### 2.2. Android SDK (минимальный набор)
 
@@ -131,7 +130,7 @@ wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708
 unzip -q cmdtools.zip -d "$ANDROID_HOME/cmdline-tools"
 # Ожидаемая структура: cmdline-tools/latest/bin/sdkmanager
 mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest" 2>/dev/null || true
-# если после unzip папка уже latest — ок
+# если после unzip папка уже latest – ок
 
 export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
 
@@ -143,7 +142,7 @@ sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
 ```bash
 ls "$ANDROID_HOME/platforms/android-34"
-ls "$ANDROID_HOME/build-tools/34.0.0/aapt2"   # x86 в SDK — на ARM часто НЕ запускается
+ls "$ANDROID_HOME/build-tools/34.0.0/aapt2"   # x86 в SDK – на ARM часто НЕ запускается
 ```
 
 ### 2.3. ARM aapt2 (критично на телефоне)
@@ -163,14 +162,14 @@ aapt2 version || true
 android.aapt2FromMavenOverride=/usr/bin/aapt2
 ```
 
-Если aapt2 в другом месте — подставьте свой путь.
+Если aapt2 в другом месте – подставьте свой путь.
 
 Также:
 
 ```bash
 # android/local.properties  (создать заново)
 sdk.dir=/root/android-sdk
-# или: sdk.dir=/home/…/android-sdk  — абсолютный путь внутри Ubuntu
+# или: sdk.dir=/home/…/android-sdk  – абсолютный путь внутри Ubuntu
 ```
 
 ---
@@ -188,14 +187,14 @@ cat > "$SRC/android/local.properties" <<EOF
 sdk.dir=$ANDROID_HOME
 EOF
 
-# gradle.properties — aapt2 override (если ещё нет)
+# gradle.properties – aapt2 override (если ещё нет)
 grep -q aapt2FromMavenOverride "$SRC/android/gradle.properties" 2>/dev/null || \
   echo "android.aapt2FromMavenOverride=$(which aapt2)" >> "$SRC/android/gradle.properties"
 ```
 
 ### Keystore
 
-Если **перенесли** `android/zipcrack-release.keystore` — пароль по умолчанию в `app/build.gradle`:
+Если **перенесли** `android/zipcrack-release.keystore` – пароль по умолчанию в `app/build.gradle`:
 
 - store/key password: `zipcrack`
 - alias: `zipcrack`
@@ -215,7 +214,7 @@ keytool -genkeypair -v \
 
 ## 4. Сборка APK
 
-### Способ A (рекомендуется) — скрипт
+### Способ A (рекомендуется) – скрипт
 
 ```bash
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-arm64
@@ -233,7 +232,7 @@ bash scripts/build-android.sh
 2. `./gradlew assembleRelease`
 3. Кладёт APK в `dist/PasswordCracker-<version>.apk`
 
-### Способ B — вручную
+### Способ B – вручную
 
 ```bash
 WORKDIR=$(mktemp -d /tmp/zip_crack_android.XXXXXX)
@@ -275,7 +274,7 @@ adb install -r /sdcard/zip_crack/dist/PasswordCracker-1.5.apk
 
 | Симптом | Что делать |
 |---------|------------|
-| `RLock … function not implemented` | Сборка с `/sdcard` — только через копию в `/tmp` (скрипт) |
+| `RLock … function not implemented` | Сборка с `/sdcard` – только через копию в `/tmp` (скрипт) |
 | `aapt2: cannot execute binary file` | `android.aapt2FromMavenOverride=/usr/bin/aapt2` |
 | `sdk.dir` not found | `local.properties` → `sdk.dir=…` абсолютный путь в Ubuntu |
 | `Unable to find Java` | `export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-arm64` |
@@ -309,7 +308,7 @@ go build -o zip_crack .
 ./zip_crack -digits -min 4 -max 4 /path/to.zip   # только ZipCrypto в Go CLI
 ```
 
-Office/7z AES в Go CLI **не** портированы — только Android Kotlin + POI/zip4j/compress.
+Office/7z AES в Go CLI **не** портированы – только Android Kotlin + POI/zip4j/compress.
 
 ---
 

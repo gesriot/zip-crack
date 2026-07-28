@@ -68,7 +68,11 @@ dist/zip_crack.exe            # CLI
 powershell -ExecutionPolicy Bypass -File scripts/build-windows-go.ps1
 ```
 
-Скрипт собирает оба бинарника в `dist/`. Иконки Windows уже лежат в репозитории как `rsrc_windows_*.syso`; пересоздавать их нужно только при смене `macos/icon-runtime.png` или `cmd/gui/icon.png`.
+Скрипт собирает оба бинарника в `dist/` с флагами уменьшения размера:
+`-buildvcs=false` и `-ldflags "-s -w -buildid="` (`-H=windowsgui` дополнительно для GUI).
+На amd64 GUI получается около 25.6 MiB вместо 43.9 MiB без strip-флагов.
+
+Иконки Windows уже лежат в репозитории как `rsrc_windows_*.syso`; пересоздавать их нужно только при смене `macos/icon-runtime.png` или `cmd/gui/icon.png`.
 
 ## Android APK
 

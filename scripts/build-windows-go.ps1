@@ -8,6 +8,9 @@ Two things are easy to forget and both are required for a correct build:
 - The GUI must link with -H=windowsgui, otherwise a console window opens
   behind the app window (the CLI must NOT use this flag, or it loses its
   stdout/stderr).
+- Both binaries are stripped with -s -w and an empty Go build id to keep
+  release artifacts smaller. buildvcs=false avoids embedding repository
+  metadata in local builds.
 - The PE icon resources (rsrc_windows_amd64.syso / rsrc_windows_arm64.syso,
   in the repo root and cmd/gui) must already exist for Explorer/taskbar/
   pinned shortcuts to show the app icon. They are committed to the repo and
@@ -36,14 +39,18 @@ if (-not $DistDir) {
 }
 New-Item -ItemType Directory -Force -Path $DistDir | Out-Null
 
+$commonBuildFlags = @("-buildvcs=false")
+$cliLdFlags = "-s -w -buildid="
+$guiLdFlags = "-s -w -H=windowsgui -buildid="
+
 Push-Location $rootPath
 try {
     Write-Host "Building CLI (dist/zip_crack.exe)..."
-    go build -o (Join-Path $DistDir "zip_crack.exe") .
+    go build @commonBuildFlags -ldflags $cliLdFlags -o (Join-Path $DistDir "zip_crack.exe") .
     if ($LASTEXITCODE -ne 0) { throw "CLI build failed" }
 
     Write-Host "Building GUI (dist/PasswordCracker-gui.exe)..."
-    go build -ldflags "-H=windowsgui" -o (Join-Path $DistDir "PasswordCracker-gui.exe") ./cmd/gui
+    go build @commonBuildFlags -ldflags $guiLdFlags -o (Join-Path $DistDir "PasswordCracker-gui.exe") ./cmd/gui
     if ($LASTEXITCODE -ne 0) { throw "GUI build failed" }
 }
 finally {

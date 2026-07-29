@@ -12,6 +12,7 @@ import (
 var (
 	sig7z  = []byte{0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c}
 	sigOLE = []byte{0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1}
+	sigRar = []byte{0x52, 0x61, 0x72, 0x21, 0x1a, 0x07} // "Rar!\x1a\x07" (RAR4 and RAR5 share this prefix)
 )
 
 // Probe opens path, detects format/encryption and returns a ready ArchiveInfo.
@@ -35,10 +36,12 @@ func ProbeBytes(raw []byte, displayName, path string) (*ArchiveInfo, error) {
 		return probeOffice(raw, displayName)
 	case is7z(raw):
 		return probe7z(raw, displayName, path)
+	case isRar(raw):
+		return probeRar(displayName, path)
 	case isZip(raw):
 		return probeZip(raw, displayName, path)
 	default:
-		return nil, fmt.Errorf("неизвестный формат. Поддерживаются ZIP, 7z, encrypted DOCX/XLSX (Office)")
+		return nil, fmt.Errorf("неизвестный формат. Поддерживаются ZIP, 7z, RAR, encrypted DOCX/XLSX (Office)")
 	}
 }
 
@@ -127,6 +130,25 @@ func probe7z(raw []byte, displayName, path string) (*ArchiveInfo, error) {
 		Backend:     Backend7z,
 		SlowPath:    true,
 		Warning:     "7z AES: перебор медленнее native ZipCrypto.",
+		Tester:      s,
+	}, nil
+}
+
+func probeRar(displayName, path string) (*ArchiveInfo, error) {
+	// Fully readable without password → not protected.
+	if rarOpenWithoutPassword(path) {
+		return nil, fmt.Errorf("RAR-архив не защищён паролем (или пуст)")
+	}
+	s, err := OpenRar(path)
+	if err != nil {
+		return nil, err
+	}
+	return &ArchiveInfo{
+		DisplayName: displayName,
+		TypeLabel:   "RAR · AES",
+		Backend:     BackendRar,
+		SlowPath:    true,
+		Warning:     "RAR AES: перебор медленнее native ZipCrypto.",
 		Tester:      s,
 	}, nil
 }
@@ -226,6 +248,10 @@ func is7z(raw []byte) bool {
 
 func isOLE(raw []byte) bool {
 	return len(raw) >= 8 && bytes.Equal(raw[:8], sigOLE)
+}
+
+func isRar(raw []byte) bool {
+	return len(raw) >= len(sigRar) && bytes.Equal(raw[:len(sigRar)], sigRar)
 }
 
 func isZip(raw []byte) bool {

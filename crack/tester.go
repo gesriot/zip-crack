@@ -14,6 +14,8 @@ const (
 	Backend7z
 	// BackendOffice — encrypted DOCX/XLSX/PPTX (MS-OFFCRYPTO agile/standard).
 	BackendOffice
+	// BackendRar — RAR3/RAR5 AES (nwaples/rardecode).
+	BackendRar
 )
 
 func (b Backend) String() string {
@@ -26,6 +28,8 @@ func (b Backend) String() string {
 		return "7z"
 	case BackendOffice:
 		return "Office"
+	case BackendRar:
+		return "RAR"
 	default:
 		return "unknown"
 	}

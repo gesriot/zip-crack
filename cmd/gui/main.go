@@ -255,7 +255,7 @@ func (u *ui) pickFile() {
 	// Modal Cocoa dialogs must run on the UI thread (button handler is fine).
 	path, err := nativedialog.File().
 		Title("Выбрать архив или Office-файл").
-		Filter("Архивы и Office", "zip", "7z", "zipx", "docx", "docm", "xlsx", "xlsm", "pptx", "pptm", "doc", "xls", "ppt").
+		Filter("Архивы и Office", "zip", "7z", "zipx", "rar", "docx", "docm", "xlsx", "xlsm", "pptx", "pptm", "doc", "xls", "ppt").
 		Filter("Все файлы", "*").
 		Load()
 	if err != nil {
